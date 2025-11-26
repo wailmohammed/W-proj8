@@ -6,13 +6,21 @@ import { TrendingUp, Search, Loader, AlertCircle } from 'lucide-react';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 import './index.css';
+import AuthUI from './components/AuthUI';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import ViewToggle from './components/ViewToggle';
+import DividendSafetyScore from './components/DividendSafetyScore';
+import DividendCaptureStrategy from './components/DividendCaptureStrategy';
+import SubscriptionPlans from './components/SubscriptionPlans';
 
-function App() {
+function AppContent() {
+  const { subscription } = useAuth();
   const [ticker, setTicker] = useState('AAPL');
   const [price, setPrice] = useState(null);
   const [historical, setHistorical] = useState([]);
   const [dividends, setDividends] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [viewMode, setViewMode] = useState('list');
 
   const API_BASE = import.meta.env.DEV ? 'http://localhost:8000' : '';
 
@@ -57,11 +65,14 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <header className="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-white" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-white">W-proj8 Stock Tracker</h1>
             </div>
-            <h1 className="text-2xl font-bold text-white">W-proj8 Stock Tracker</h1>
+            <AuthUI />
           </div>
           <div className="flex gap-2">
             <div className="flex-1 relative">
@@ -113,35 +124,90 @@ function App() {
             </div>
 
             {/* Dividends Card */}
-            <div className="bg-slate-700 border border-slate-600 rounded-lg p-6">
-              <h3 className="text-white font-semibold mb-4">Recent Dividends</h3>
-              {dividends.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-slate-600">
-                        <th className="text-left text-slate-300 font-semibold px-4 py-2">Date</th>
-                        <th className="text-right text-slate-300 font-semibold px-4 py-2">Amount</th>
-                        <th className="text-right text-slate-300 font-semibold px-4 py-2">Est. Yield</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dividends.map((div, index) => (
-                        <tr key={index} className="border-b border-slate-600/50 hover:bg-slate-600/30 transition-colors">
-                          <td className="text-slate-200 px-4 py-3">{new Date(div.date).toLocaleDateString()}</td>
-                          <td className="text-right text-cyan-400 font-semibold px-4 py-3">${div.amount.toFixed(4)}</td>
-                          <td className="text-right text-slate-300 px-4 py-3">{((div.amount / price.price) * 100).toFixed(2)}%</td>
+            <div className="bg-slate-700 border border-slate-600 rounded-lg p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-white font-semibold">Dividend Analysis</h3>
+                <ViewToggle activeView={viewMode} onViewChange={setViewMode} />
+              </div>
+
+              {/* Dividend Safety Score - Premium Only */}
+              {subscription !== 'free' && (
+                <DividendSafetyScore ticker={ticker} data={{
+                  payoutRatio: 30,
+                  earningsGrowth: 5,
+                  debtToEquity: 0.5,
+                  fcfTrend: 5
+                }} />
+              )}
+
+              {/* Dividend Capture Strategy - Premium Only */}
+              {subscription !== 'free' && (
+                <DividendCaptureStrategy ticker={ticker} data={{
+                  exDividendDate: '2024-03-15',
+                  dividendAmount: 0.5,
+                  currentPrice: price?.price || 100,
+                  holdingPeriodDays: 60
+                }} />
+              )}
+
+              {/* List View */}
+              {viewMode === 'list' && (
+                dividends.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-600">
+                          <th className="text-left text-slate-300 font-semibold px-4 py-2">Date</th>
+                          <th className="text-right text-slate-300 font-semibold px-4 py-2">Amount</th>
+                          <th className="text-right text-slate-300 font-semibold px-4 py-2">Est. Yield</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 text-slate-400 py-8">
-                  <AlertCircle className="w-4 h-4" />
-                  <p>No dividend history available for {ticker}</p>
+                      </thead>
+                      <tbody>
+                        {dividends.map((div, index) => (
+                          <tr key={index} className="border-b border-slate-600/50 hover:bg-slate-600/30 transition-colors">
+                            <td className="text-slate-200 px-4 py-3">{new Date(div.date).toLocaleDateString()}</td>
+                            <td className="text-right text-cyan-400 font-semibold px-4 py-3">${div.amount.toFixed(4)}</td>
+                            <td className="text-right text-slate-300 px-4 py-3">{((div.amount / price.price) * 100).toFixed(2)}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-slate-400 py-8">
+                    <AlertCircle className="w-4 h-4" />
+                    <p>No dividend history available for {ticker}</p>
+                  </div>
+                )
+              )}
+
+              {/* Calendar View */}
+              {viewMode === 'calendar' && (
+                <div className="bg-slate-800/50 rounded-lg p-4 text-center text-slate-400">
+                  <p className="text-sm">Calendar view showing dividend payment schedule</p>
+                  <div className="mt-4 grid grid-cols-7 gap-2">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="text-xs font-semibold text-slate-300">{day}</div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-4">Calendar feature available in Premium plan</p>
                 </div>
               )}
+
+              {/* Chart View */}
+              {viewMode === 'chart' && (
+                <div className="bg-slate-800/50 rounded-lg p-4 text-center text-slate-400">
+                  <p className="text-sm">Dividend history chart</p>
+                  <div className="h-48 flex items-center justify-center text-slate-500">
+                    Chart visualization coming soon
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Subscription Plans */}
+            <div className="mt-8">
+              <SubscriptionPlans />
             </div>
           </div>
         ) : price?.error ? (
@@ -162,6 +228,14 @@ function App() {
         )}
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
