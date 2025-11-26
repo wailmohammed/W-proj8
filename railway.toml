@@ -1,0 +1,6 @@
+# Minimal railway.toml placeholder for deployment
+[project]
+name = "w-proj8"
+
+[deploy]
+build = "npm --prefix frontend run build && pip install -r backend/requirements.txt"
