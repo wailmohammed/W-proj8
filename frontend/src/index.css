@@ -1,11 +1,42 @@
-:root { --accent: #4bc0c0; }
-body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; padding:0; background:#f7fafc; color:#0f172a }
-.app { max-width:1100px; margin:24px auto; padding:16px; }
-.header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.search-container { display:flex; gap:8px; }
-.search-input { padding:8px 12px; border-radius:6px; border:1px solid #d1d5db }
-.search-button { background:var(--accent); color:#fff; border:none; padding:8px 12px; border-radius:6px }
-.price-title { margin:8px 0 }
-.chart-section { margin-top:16px }
-.dividends-table { width:100%; border-collapse:collapse; margin-top:12px }
-.dividends-table th, .dividends-table td { padding:8px 10px; border-bottom:1px solid #e6eef6; text-align:left }
+:root { --accent: #06b6d4; }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
