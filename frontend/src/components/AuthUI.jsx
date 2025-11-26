@@ -31,8 +31,8 @@ export default function AuthUI() {
 
   if (!isAuthenticated && showAuth) {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-slate-800 border border-slate-600 rounded-lg p-8 max-w-md w-full mx-4">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="bg-slate-800 border border-slate-600 rounded-lg p-8 max-w-md w-full">
           <div className="flex items-center gap-2 mb-6">
             <Lock className="w-5 h-5 text-cyan-400" />
             <h2 className="text-2xl font-bold text-white">{isLogin ? 'Login' : 'Register'}</h2>

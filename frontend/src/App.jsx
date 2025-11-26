@@ -62,9 +62,9 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <header className="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="min-h-screen w-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-x-hidden">
+      <header className="bg-slate-800 border-b border-slate-700 sticky top-0 z-40 w-full">
+        <div className="max-w-6xl mx-auto px-4 py-6 w-full">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg">
@@ -98,7 +98,7 @@ function AppContent() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 py-8 w-full">
         {price && !price.error ? (
           <div className="space-y-6">
             {/* Price Card */}
