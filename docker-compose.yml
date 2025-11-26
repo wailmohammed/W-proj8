@@ -1,17 +1,26 @@
 version: '3.8'
 services:
   app:
-    image: python:3.11-slim
-    volumes:
-      - ./backend:/srv/backend
-    working_dir: /srv/backend
-    command: bash -c "pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000"
-    ports:
-      - 8000:8000
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: wproj8-backend:latest
     environment:
       - REDIS_URL=redis://redis:6379/0
+    ports:
+      - 8000:8000
     depends_on:
       - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: wproj8-frontend:latest
+    ports:
+      - 8080:80
+    depends_on:
+      - app
 
   redis:
     image: redis:7
